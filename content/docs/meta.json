@@ -1,0 +1,14 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "getting-started",
+    "---Guides---",
+    "canvas",
+    "---Developers---",
+    "mcp-tools",
+    "api",
+    "---Updates---",
+    "releases"
+  ]
+}

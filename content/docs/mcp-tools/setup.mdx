@@ -1,0 +1,85 @@
+---
+title: MCP Setup Guide
+description: Connect Growhouse MCP tools to your AI assistant
+---
+
+# MCP Setup Guide
+
+Follow these steps to connect Growhouse MCP tools to your AI assistant.
+
+## Prerequisites
+
+- A Growhouse account with API access
+- An MCP-compatible AI client (Claude Desktop, Cursor, etc.)
+
+## Get Your API Key
+
+1. Go to **Workspace Settings** in Growhouse
+2. Navigate to **API Keys**
+3. Click **"Create API Key"**
+4. Copy the key (you won't see it again)
+
+## Configure Your MCP Client
+
+### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "growhouse": {
+      "command": "npx",
+      "args": ["-y", "@growhouse/mcp-server"],
+      "env": {
+        "GROWHOUSE_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+### Cursor
+
+Add to your MCP settings:
+
+```json
+{
+  "growhouse": {
+    "command": "npx",
+    "args": ["-y", "@growhouse/mcp-server"],
+    "env": {
+      "GROWHOUSE_API_KEY": "your-api-key-here"
+    }
+  }
+}
+```
+
+## Verify Connection
+
+Once configured, your AI assistant should have access to Growhouse tools. Try asking:
+
+```
+"List my Growhouse canvases"
+```
+
+## Troubleshooting
+
+### "Server not found" error
+
+- Ensure you have Node.js installed (v18+)
+- Check your API key is correct
+- Restart your AI client
+
+### "Unauthorized" error
+
+- Verify your API key is active
+- Check the key has the required permissions
+- Ensure you're accessing the correct workspace
+
+## Security Notes
+
+- Never share your API key
+- Use environment variables, not hardcoded values
+- Rotate keys periodically
+- Revoke unused keys in workspace settings

@@ -1,0 +1,111 @@
+---
+title: Canvas MCP Reference
+description: Complete reference for Growhouse Canvas MCP tools
+---
+
+# Canvas MCP Reference
+
+Complete API reference for all Growhouse Canvas MCP tools.
+
+## Tools
+
+### list_canvases
+
+List all canvases in the workspace.
+
+**Parameters:**
+- `workspace_id` (optional): Filter by workspace
+
+**Returns:** Array of canvas objects with id, name, and metadata.
+
+---
+
+### get_canvas_overview
+
+Get a high-level overview of a canvas.
+
+**Parameters:**
+- `canvas_id` (required): The canvas ID
+
+**Returns:** Canvas summary including element counts and structure.
+
+---
+
+### find_elements
+
+Search for elements on a canvas.
+
+**Parameters:**
+- `canvas_id` (required): The canvas ID
+- `type` (optional): Filter by element type (text, image, video, etc.)
+- `query` (optional): Search text content
+
+**Returns:** Array of matching elements.
+
+---
+
+### get_element_details
+
+Get full details of a specific element.
+
+**Parameters:**
+- `element_id` (required): The element ID
+
+**Returns:** Complete element data including content and position.
+
+---
+
+### create_element
+
+Create a new element on a canvas.
+
+**Parameters:**
+- `canvas_id` (required): Target canvas ID
+- `type` (required): Element type
+- `content` (required): Element content
+- `position` (optional): x, y coordinates
+
+**Returns:** Created element object.
+
+---
+
+### update_element
+
+Update an existing element.
+
+**Parameters:**
+- `element_id` (required): Element to update
+- `content` (optional): New content
+- `position` (optional): New position
+
+**Returns:** Updated element object.
+
+---
+
+### delete_element
+
+Remove an element from canvas.
+
+**Parameters:**
+- `element_id` (required): Element to delete
+
+**Returns:** Confirmation of deletion.
+
+## Error Handling
+
+All tools return standard MCP error responses:
+
+```json
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Canvas not found"
+  }
+}
+```
+
+Common error codes:
+- `NOT_FOUND` - Resource doesn't exist
+- `UNAUTHORIZED` - Invalid or missing credentials
+- `FORBIDDEN` - Insufficient permissions
+- `INVALID_INPUT` - Invalid parameters

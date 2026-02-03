@@ -1,0 +1,64 @@
+---
+title: Authentication
+description: How to authenticate with the Growhouse API
+---
+
+# Authentication
+
+The Growhouse API uses API keys for authentication.
+
+## Getting an API Key
+
+1. Log in to [app.growhouse.co](https://app.growhouse.co)
+2. Go to **Workspace Settings**
+3. Click **API Keys** in the sidebar
+4. Click **Create API Key**
+5. Give it a name and select permissions
+6. Copy the key immediately (it won't be shown again)
+
+## Using Your API Key
+
+Include your API key in the `Authorization` header:
+
+```bash
+curl -X GET "https://api.growhouse.co/v1/workspaces" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Key Permissions
+
+When creating a key, you can scope its permissions:
+
+| Permission | Description |
+|------------|-------------|
+| `read:workspaces` | View workspace info |
+| `write:workspaces` | Create/update workspaces |
+| `read:canvases` | View canvases |
+| `write:canvases` | Create/update canvases |
+| `delete:canvases` | Delete canvases |
+
+## Security Best Practices
+
+### Do
+
+- Store keys in environment variables
+- Use separate keys for different applications
+- Rotate keys periodically
+- Use minimum required permissions
+
+### Don't
+
+- Commit keys to version control
+- Share keys between team members
+- Use production keys in development
+- Expose keys in client-side code
+
+## Revoking Keys
+
+If a key is compromised:
+
+1. Go to **Workspace Settings** → **API Keys**
+2. Find the compromised key
+3. Click **Revoke**
+4. Create a new key
+5. Update your applications

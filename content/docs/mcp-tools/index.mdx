@@ -1,0 +1,59 @@
+---
+title: MCP Tools Overview
+description: Integrate Growhouse with AI assistants using Model Context Protocol
+---
+
+# MCP Tools
+
+Growhouse provides MCP (Model Context Protocol) tools that allow AI assistants like Claude, Cursor, and others to interact with your canvases.
+
+## What is MCP?
+
+Model Context Protocol is an open standard that enables AI applications to securely connect to external data sources and tools. With Growhouse MCP tools, AI assistants can:
+
+- **Read canvas content** - Access elements, text, and structure
+- **Create elements** - Add new content to canvases
+- **Update elements** - Modify existing content
+- **Search canvases** - Find specific content across your workspace
+
+## Available Tools
+
+### Canvas MCP Server
+
+The Growhouse Canvas MCP server provides these tools:
+
+| Tool | Description |
+|------|-------------|
+| `list_canvases` | List all canvases in a workspace |
+| `get_canvas_overview` | Get summary of a canvas |
+| `find_elements` | Search for elements by type or content |
+| `get_element_details` | Get full details of an element |
+| `create_element` | Create a new element |
+| `update_element` | Update an existing element |
+| `delete_element` | Remove an element |
+
+## Use Cases
+
+### Content Generation
+
+Ask your AI assistant to create content directly on your canvas:
+
+```
+"Add a heading 'Q1 Goals' and three bullet points underneath"
+```
+
+### Content Review
+
+Have AI review and analyze your canvas content:
+
+```
+"Summarize all the text elements on this canvas"
+```
+
+### Automation
+
+Build workflows that automatically update canvases based on triggers.
+
+## Getting Started
+
+See [Setup Guide](/docs/mcp-tools/setup) to connect Growhouse MCP to your AI assistant.

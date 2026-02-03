@@ -1,0 +1,75 @@
+---
+title: API Reference
+description: Growhouse REST API documentation
+---
+
+# API Reference
+
+The Growhouse API allows you to programmatically interact with your workspaces and canvases.
+
+## Base URL
+
+```
+https://api.growhouse.co/v1
+```
+
+## Authentication
+
+All API requests require authentication via API key. See [Authentication](/docs/api/authentication) for details.
+
+## Endpoints
+
+### Workspaces
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/workspaces` | List all workspaces |
+| GET | `/workspaces/:id` | Get workspace details |
+| POST | `/workspaces` | Create workspace |
+| PATCH | `/workspaces/:id` | Update workspace |
+
+### Canvases
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/canvases` | List canvases |
+| GET | `/canvases/:id` | Get canvas details |
+| POST | `/canvases` | Create canvas |
+| PATCH | `/canvases/:id` | Update canvas |
+| DELETE | `/canvases/:id` | Delete canvas |
+
+### Elements
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/canvases/:id/elements` | List elements |
+| POST | `/canvases/:id/elements` | Create element |
+| PATCH | `/elements/:id` | Update element |
+| DELETE | `/elements/:id` | Delete element |
+
+## Response Format
+
+All responses are JSON:
+
+```json
+{
+  "data": { ... },
+  "meta": {
+    "timestamp": "2026-02-03T10:00:00Z"
+  }
+}
+```
+
+## Rate Limits
+
+- **Free tier**: 100 requests/minute
+- **Pro tier**: 1000 requests/minute
+- **Enterprise**: Custom limits
+
+Rate limit headers are included in all responses:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1706958000
+```
