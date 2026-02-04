@@ -1,95 +1,362 @@
 ---
 title: Canvas MCP Reference
-description: Complete reference for Growhouse Canvas MCP tools
+description: Complete API reference for Growhouse Canvas MCP tools
 ---
 
 # Canvas MCP Reference
 
 Complete API reference for all Growhouse Canvas MCP tools.
 
-## Tools
+---
+
+## Core Tools
 
 ### list_canvases
 
-List all canvases in the workspace.
+List all canvases with MCP access enabled in the workspace.
 
-**Parameters:**
-- `workspace_id` (optional): Filter by workspace
+**Parameters:** None required
 
 **Returns:** Array of canvas objects with id, name, and metadata.
+
+```json
+{
+  "canvases": [
+    {
+      "id": "uuid",
+      "name": "My Canvas",
+      "created_at": "2024-01-15T10:00:00Z",
+      "updated_at": "2024-01-15T12:00:00Z"
+    }
+  ]
+}
+```
 
 ---
 
 ### get_canvas_overview
 
-Get a high-level overview of a canvas.
+Get a high-level overview of a canvas including element counts, bounds, and content types.
 
 **Parameters:**
-- `canvas_id` (required): The canvas ID
 
-**Returns:** Canvas summary including element counts and structure.
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | The UUID of the canvas |
+| `collaboration_context` | object | No | Pass to see online users and their activity |
+
+**Collaboration Context Object:**
+```json
+{
+  "requesting_user_id": "your-user-id",
+  "online_users": [{"user_id": "...", "display_name": "..."}],
+  "cursors": [{"user_id": "...", "x": 100, "y": 200}],
+  "selections": [{"user_id": "...", "element_id": "..."}],
+  "text_locks": [{"user_id": "...", "element_id": "...", "locked_at": "..."}]
+}
+```
+
+**Returns:** Canvas summary including element counts, bounds, and collaboration summary.
 
 ---
 
 ### find_elements
 
-Search for elements on a canvas.
+Search for elements on a canvas by type, content, location, or collaboration status.
 
 **Parameters:**
-- `canvas_id` (required): The canvas ID
-- `type` (optional): Filter by element type (text, image, video, etc.)
-- `query` (optional): Search text content
 
-**Returns:** Array of matching elements.
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | The UUID of the canvas |
+| `query` | string | No | Text query to search in element content |
+| `max_results` | number | No | Maximum results (1-50, default: 10) |
+| `filters` | object | No | Filter options (see below) |
+| `collaboration_context` | object | No | Pass to see collaboration status per element |
+| `collaboration_filter` | object | No | Filter by collaboration status (requires context) |
+
+**Filter Options:**
+```json
+{
+  "type": "node",           // "node", "annotation", or "all"
+  "subtype": "sticky",      // "sticky", "text-element", "media", "embed"
+  "content_contains": "Q1", // Text content filter
+  "quadrant": "top-left"    // "top-left", "top-right", "bottom-left", "bottom-right", "center"
+}
+```
+
+**Collaboration Filter Options:**
+```json
+{
+  "only_available": true,         // Not locked AND not selected by others
+  "only_locked": true,            // Currently locked for editing
+  "only_selected_by_others": true,// Selected by other users
+  "only_with_conflicts": true     // Locked OR selected by others
+}
+```
+
+**Element Subtypes:**
+- `sticky` - Plain text notes (editable)
+- `text-element` - Rich text with Tiptap JSON (editable)
+- `media` - Images/videos (create via `create_media_element`)
+- `embed` - Social embeds (create via `create_media_element`)
 
 ---
 
 ### get_element_details
 
-Get full details of a specific element.
+Get detailed information about a specific element.
 
 **Parameters:**
-- `element_id` (required): The element ID
 
-**Returns:** Complete element data including content and position.
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | The UUID of the canvas |
+| `element_id` | string | Yes | The UUID of the element |
+| `include` | array | No | What to include: `"content"`, `"styles"`, `"position"`, `"context"` |
+| `collaboration_context` | object | No | Pass to see if element is locked/selected |
+
+**Include Options:**
+- `content` - Element content (default)
+- `styles` - Visual styling (colors, fonts)
+- `position` - x, y coordinates and dimensions
+- `context` - Nearby elements, selection info, collaboration status
+
+**Content Format:**
+- For `sticky`: Plain text string
+- For `text-element`: Tiptap JSON format
 
 ---
 
-### create_element
+### resolve_natural_ref
 
-Create a new element on a canvas.
+Convert a natural reference (e.g., "sticky-top-left-1") to an element UUID.
 
 **Parameters:**
-- `canvas_id` (required): Target canvas ID
-- `type` (required): Element type
-- `content` (required): Element content
-- `position` (optional): x, y coordinates
 
-**Returns:** Created element object.
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | The UUID of the canvas |
+| `natural_ref` | string | Yes | Natural reference like "sticky-top-left-1" |
+
+**Natural Reference Format:**
+```
+{subtype}-{quadrant}-{index}
+
+Examples:
+- sticky-top-left-1
+- text-element-center-2
+- media-bottom-right-1
+- embed-top-right-3
+```
+
+---
+
+## Content Creation Tools
+
+### create_element
+
+Create a new sticky note or text element on the canvas.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | Target canvas UUID |
+| `type` | string | Yes | `"sticky"` or `"text-element"` |
+| `content` | string | Yes | Text content (format depends on type) |
+| `position` | object | No | Position specification |
+| `styles` | object | No | Visual styling options |
+
+**Content Format by Type:**
+
+For `sticky` (recommended for most use cases):
+```json
+{
+  "type": "sticky",
+  "content": "Plain text content here"
+}
+```
+
+For `text-element` (rich text):
+```json
+{
+  "type": "text-element",
+  "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Your text here\"}]}]}"
+}
+```
+
+**Position Options (use ONE):**
+```json
+{
+  "quadrant": "top-left"              // Position in canvas region
+}
+// OR
+{
+  "near_element": "sticky-top-left-1" // 50px right of another element
+}
+// OR
+{
+  "x": 100,                           // Exact coordinates
+  "y": 200
+}
+```
+
+**Style Options:**
+```json
+{
+  "sticky_color": "#FFFB91",  // Background for sticky notes
+  "color": "#000000",         // Text color (hex)
+  "font_size": 16             // Font size in pixels
+}
+```
+
+**Valid Sticky Colors:**
+| Color | Hex |
+|-------|-----|
+| Yellow | `#FFFB91` |
+| Pink | `#FFD6CC` |
+| Blue | `#D4F0FF` |
+| Green | `#D4F5D4` |
+| Purple | `#E8D4FF` |
+| Orange | `#FFE4CC` |
+
+---
+
+### create_media_element
+
+Create an image, video, or social media embed from a URL.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | Target canvas UUID |
+| `type` | string | Yes | `"media"` or `"embed"` |
+| `url` | string | Yes | URL of the content |
+| `position` | object | No | Position specification (same as create_element) |
+| `options` | object | No | Display options |
+
+**Type: media**
+For direct image/video files:
+- `.jpg`, `.png`, `.gif`, `.webp`
+- `.mp4`, `.webm`
+- CDN URLs (Supabase Storage, Cloudinary, etc.)
+
+**Type: embed**
+For social media content (auto-detected from URL):
+- YouTube: `https://www.youtube.com/watch?v=...`
+- Instagram: `https://www.instagram.com/p/...`
+- TikTok: `https://www.tiktok.com/@user/video/...`
+- Twitter/X: `https://twitter.com/user/status/...`
+- LinkedIn: `https://www.linkedin.com/posts/...`
+- Facebook: `https://www.facebook.com/...`
+- Loom: `https://www.loom.com/share/...`
+
+**Display Options:**
+```json
+{
+  "width": 340,           // Width in pixels
+  "height": 400,          // Height in pixels
+  "display_mode": "card", // "card", "player", or "inline" (embeds only)
+  "show_caption": true,   // Show caption (embeds only)
+  "muted": true           // Start muted (videos only)
+}
+```
 
 ---
 
 ### update_element
 
-Update an existing element.
+Update an existing element's content, position, or styles.
 
 **Parameters:**
-- `element_id` (required): Element to update
-- `content` (optional): New content
-- `position` (optional): New position
 
-**Returns:** Updated element object.
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | Canvas UUID |
+| `element_id` | string | No* | UUID of element to update |
+| `natural_ref` | string | No* | Natural reference (e.g., "sticky-top-left-1") |
+| `content` | string | No | New content (must match element type format) |
+| `position` | object | No | New position `{x, y}` |
+| `styles` | object | No | Updated styles |
+
+*Use either `element_id` OR `natural_ref`, not both.
+
+**Important:** Content format must match the element type:
+- Sticky → plain text
+- Text-element → Tiptap JSON
+
+Use `get_element_details` first to check the current format.
 
 ---
 
 ### delete_element
 
-Remove an element from canvas.
+Remove an element from the canvas. This action is permanent.
 
 **Parameters:**
-- `element_id` (required): Element to delete
 
-**Returns:** Confirmation of deletion.
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | Canvas UUID |
+| `element_id` | string | No* | UUID of element to delete |
+| `natural_ref` | string | No* | Natural reference (e.g., "sticky-top-left-1") |
+
+*Use either `element_id` OR `natural_ref`, not both.
+
+---
+
+## Intelligence & Collaboration Tools
+
+### get_clusters
+
+Analyze spatial clustering and infer relationships between elements.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | Canvas UUID |
+| `min_cluster_size` | number | No | Minimum elements to form a cluster (default: 2) |
+| `include_orphans` | boolean | No | Include unclustered elements (default: true) |
+
+**Returns:** Clusters with inferred intent and relationships.
+
+**Cluster Intents:**
+- `moodboard` - Visual inspiration collection
+- `comparison` - Side-by-side comparison
+- `sequence` - Ordered flow or timeline
+- `brainstorm` - Idea collection
+- `reference` - Supporting materials
+
+**Relationship Types:**
+- `labels` - Text labeling media
+- `annotates` - Annotation on content
+- `sequence_with` - Part of a sequence
+- `compares_to` - Comparison relationship
+
+---
+
+### get_collaboration_status
+
+Get real-time collaboration status for a canvas.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `canvas_id` | string | Yes | Canvas UUID |
+| `collaboration_context` | object | Yes | Current state from client |
+
+**Returns:**
+- Online users with display names and colors
+- Cursor positions of all users
+- Element selections by user
+- Text editing locks
+- Potential conflicts
+
+---
 
 ## Error Handling
 
@@ -104,8 +371,13 @@ All tools return standard MCP error responses:
 }
 ```
 
-Common error codes:
-- `NOT_FOUND` - Resource doesn't exist
-- `UNAUTHORIZED` - Invalid or missing credentials
-- `FORBIDDEN` - Insufficient permissions
-- `INVALID_INPUT` - Invalid parameters
+**Error Codes:**
+
+| Code | Description |
+|------|-------------|
+| `NOT_FOUND` | Resource doesn't exist |
+| `UNAUTHORIZED` | Invalid or missing credentials |
+| `FORBIDDEN` | Insufficient permissions |
+| `INVALID_INPUT` | Invalid parameters |
+| `CONFLICT` | Element is locked by another user |
+| `RATE_LIMITED` | Too many requests |
