@@ -23,35 +23,26 @@ interface Announcement {
 // Announcements data - edit this to add new announcements
 // When you deploy a major feature, add an announcement here
 const announcements: Announcement[] = [
-  // Example announcement (uncomment when you have a real one):
-  // {
-  //   id: '2026-02-05-realtime-collab',
-  //   version: '1.2.0',
-  //   slides: [
-  //     {
-  //       id: 'slide-1',
-  //       title: 'Real-time Collaboration is Here',
-  //       description: 'Now you can see when teammates are online and what they\'re working on. No more accidental overwrites.',
-  //       media: {
-  //         type: 'loom',
-  //         url: 'https://www.loom.com/share/your-video-id',
-  //       },
-  //       cta: {
-  //         label: 'Learn more in docs',
-  //         url: 'https://docs.growhouse.co/docs/canvas/collaboration',
-  //       },
-  //     },
-  //     {
-  //       id: 'slide-2',
-  //       title: 'See Who\'s Online',
-  //       description: 'Colored cursors and presence indicators show you exactly where your team is working.',
-  //       media: {
-  //         type: 'image',
-  //         url: 'https://docs.growhouse.co/images/collab-cursors.png',
-  //       },
-  //     },
-  //   ],
-  // },
+  {
+    id: 'test-2026-02-05',
+    version: '0.0.1',
+    slides: [
+      {
+        id: 'slide-1',
+        title: 'Testing Announcement System',
+        description: 'This is a test announcement to verify the modal works end-to-end. If you see this, the system is working correctly.',
+        cta: {
+          label: 'View docs',
+          url: 'https://docs.growhouse.co/docs',
+        },
+      },
+      {
+        id: 'slide-2',
+        title: 'Multi-Slide Support',
+        description: 'This is slide 2 of 2. Pagination dots and navigation arrows should be visible below.',
+      },
+    ],
+  },
 ];
 
 export async function GET() {
