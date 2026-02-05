@@ -45,10 +45,19 @@ const announcements: Announcement[] = [
   },
 ];
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: corsHeaders });
+}
+
 export async function GET() {
   return NextResponse.json({
     announcements,
-    // Metadata for the client
     meta: {
       count: announcements.length,
       latestVersion: announcements[0]?.version || null,
@@ -56,7 +65,7 @@ export async function GET() {
     },
   }, {
     headers: {
-      // Cache for 5 minutes, revalidate in background
+      ...corsHeaders,
       'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
     },
   });
