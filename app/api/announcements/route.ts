@@ -22,28 +22,9 @@ interface Announcement {
 
 // Announcements data - edit this to add new announcements
 // When you deploy a major feature, add an announcement here
-const announcements: Announcement[] = [
-  {
-    id: 'test-2026-02-05',
-    version: '0.0.1',
-    slides: [
-      {
-        id: 'slide-1',
-        title: 'Testing Announcement System',
-        description: 'This is a test announcement to verify the modal works end-to-end. If you see this, the system is working correctly.',
-        cta: {
-          label: 'View docs',
-          url: 'https://docs.growhouse.co/docs',
-        },
-      },
-      {
-        id: 'slide-2',
-        title: 'Multi-Slide Support',
-        description: 'This is slide 2 of 2. Pagination dots and navigation arrows should be visible below.',
-      },
-    ],
-  },
-];
+// Add announcements here when shipping features.
+// Use /release skill in Claude Code to generate these automatically.
+const announcements: Announcement[] = [];
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
