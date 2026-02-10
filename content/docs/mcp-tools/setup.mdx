@@ -7,25 +7,16 @@ description: Set up Growhouse MCP in your AI assistant
 
 Growhouse runs a remote MCP server at `https://mcp.growhouse.co`. Connect it to Claude, Cursor, Windsurf, or any MCP-compatible client.
 
-Two ways to connect:
+## OAuth (recommended)
 
-| Method | Best for | Setup time |
-|--------|----------|------------|
-| **OAuth** | Claude (claude.ai, Claude Code) | 30 seconds |
-| **API Key** | Any MCP client | 2 minutes |
-
----
-
-## Option A: OAuth (Claude)
-
-The fastest way. Claude handles everything.
+If your client supports OAuth — Claude does — just point it at the server URL. No keys needed.
 
 ### Claude.ai / Claude Desktop
 
 1. Open **Settings > MCP Servers** in Claude
 2. Add server URL: `https://mcp.growhouse.co`
-3. Click **Connect** — you'll be redirected to Growhouse to sign in and approve
-4. Done. Claude now has access to your canvases.
+3. Click **Connect** — sign in to Growhouse and approve
+4. Done.
 
 ### Claude Code (CLI)
 
@@ -33,33 +24,31 @@ The fastest way. Claude handles everything.
 claude mcp add growhouse --url https://mcp.growhouse.co
 ```
 
-Claude Code will open your browser to complete authorization.
+Claude Code opens your browser to authorize. After you approve, it's connected.
+
+### Cursor / Windsurf
+
+Add `https://mcp.growhouse.co` as a remote MCP server. If the client supports OAuth, it will handle authorization automatically.
 
 ---
 
-## Option B: API Key
+## API Key (headless / no OAuth)
 
-Works with any MCP client. You create a key in Growhouse and add it to your client's config.
+For clients that don't support OAuth, or automated environments without a browser.
 
-### 1. Create an API key
+### 1. Create a key
 
-1. Open [app.growhouse.co](https://app.growhouse.co) and go to **Settings**
-2. Under **Account > MCP Keys**, click **Create Key**
-3. Copy the key immediately — you won't see it again
+1. Open [app.growhouse.co](https://app.growhouse.co) > **Settings**
+2. **Account > MCP Keys** — creates a key for all your workspaces
+3. Copy it immediately — you won't see it again
 
 <Callout type="info">
-User API keys grant access to all your workspaces. For workspace-scoped keys, go to **Settings > Workspace > MCP**.
+For workspace-scoped keys (one workspace only), go to **Settings > Workspace > MCP**.
 </Callout>
 
-### 2. Add to your MCP client
+### 2. Configure your client
 
-#### Claude Code
-
-```bash
-claude mcp add growhouse --url https://mcp.growhouse.co --header "Authorization: Bearer YOUR_API_KEY"
-```
-
-Or add to `~/.claude/mcp_servers.json`:
+Add as a remote MCP server with the key in the `Authorization` header:
 
 ```json
 {
@@ -74,26 +63,10 @@ Or add to `~/.claude/mcp_servers.json`:
 }
 ```
 
-#### Claude Desktop
-
-Add to `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "growhouse": {
-      "url": "https://mcp.growhouse.co",
-      "headers": {
-        "Authorization": "Bearer YOUR_API_KEY"
-      }
-    }
-  }
-}
-```
-
-#### Cursor / Windsurf / Other
-
-Same pattern — add as a remote MCP server with URL `https://mcp.growhouse.co` and the `Authorization: Bearer` header.
+Where this file lives depends on your client:
+- **Claude Code**: `~/.claude/mcp_servers.json`
+- **Claude Desktop**: `claude_desktop_config.json`
+- **Cursor**: MCP settings in the IDE
 
 ### 3. Verify
 
@@ -103,34 +76,30 @@ Ask your AI assistant:
 List my Growhouse canvases
 ```
 
-You should see your canvases listed.
-
 ---
 
 ## Troubleshooting
 
-### "Unauthorized" or 401 error
+### "Unauthorized" or 401
 
-- Check your API key is correct and not revoked
-- Make sure the `Authorization` header is `Bearer YOUR_KEY` (with the space)
-- Try creating a new key
+- If using an API key: check it's correct and not revoked
+- If using OAuth: try disconnecting and reconnecting from your client
 
 ### "No canvases found"
 
-- Enable MCP access for your canvases in **Settings > Workspace > MCP > Canvas AI Access**
-- By default, all canvases are accessible — but you may have toggled some off
+- Check **Settings > Workspace > MCP > Canvas AI Access** — canvases must have MCP enabled
+- All canvases are enabled by default, but you may have toggled some off
 
 ### OAuth flow not completing
 
 - Make sure you're logged in to Growhouse before approving
-- If the flow gets stuck, close the tab and retry from your AI client
+- If it gets stuck, close the tab and retry from your AI client
 - Check that pop-ups aren't blocked
 
 ---
 
 ## Security
 
-- API keys are hashed — Growhouse never stores the raw key
-- Rotate keys anytime in Settings
-- Revoke compromised keys immediately
+- API keys are SHA-256 hashed — Growhouse never stores the raw key
 - OAuth tokens auto-expire and refresh automatically
+- Rotate or revoke keys anytime in Settings
