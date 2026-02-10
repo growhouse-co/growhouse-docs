@@ -1,125 +1,115 @@
 ---
-title: MCP Tools Overview
-description: Integrate Growhouse with AI assistants using Model Context Protocol
+title: MCP Tools
+description: Give your AI assistant access to Growhouse canvases
 ---
 
 # MCP Tools
 
-Growhouse provides MCP (Model Context Protocol) tools that allow AI assistants like Claude, Cursor, and others to interact with your canvases in real-time.
+Growhouse exposes your canvases to AI assistants via [Model Context Protocol](https://modelcontextprotocol.io). Claude, Cursor, Windsurf, and any MCP client can read, create, and edit canvas elements.
 
-## What is MCP?
+**Server URL**: `https://mcp.growhouse.co`
 
-Model Context Protocol is an open standard that enables AI applications to securely connect to external data sources and tools. With Growhouse MCP tools, AI assistants can:
+<Cards>
+  <Card title="Connect to Growhouse" href="/docs/mcp-tools/setup" />
+  <Card title="API Reference" href="/docs/mcp-tools/canvas-mcp" />
+</Cards>
 
-- **Read canvas content** - Access elements, text, and spatial structure
-- **Create elements** - Add sticky notes, text, images, videos, and social embeds
-- **Update elements** - Modify content, position, and styling
-- **Understand context** - AI-powered clustering detects moodboards, sequences, and relationships
-- **Collaborate safely** - Real-time awareness of other users editing
+---
 
 ## Available Tools
 
-### Core Tools
+### Read
 
-| Tool | Description |
+| Tool | What it does |
 |------|-------------|
-| `list_canvases` | List all canvases with MCP access enabled |
-| `get_canvas_overview` | Get summary with element counts, bounds, and collaboration status |
-| `find_elements` | Search by type, content, location, or collaboration status |
-| `get_element_details` | Get full details including content, styles, and context |
+| `list_canvases` | List all canvases you have access to |
+| `get_canvas_overview` | Element counts, bounds, who's online |
+| `find_elements` | Search by type, content, location |
+| `get_element_details` | Full content, styles, position |
 
-### Content Creation
+### Write
 
-| Tool | Description |
+| Tool | What it does |
 |------|-------------|
-| `create_element` | Create sticky notes or rich text elements |
-| `create_media_element` | Add images, videos, or social embeds (YouTube, TikTok, Instagram, etc.) |
-| `update_element` | Modify content, position, or styles |
-| `delete_element` | Remove an element from canvas |
+| `create_element` | Add sticky notes or rich text |
+| `create_media_element` | Add images, videos, social embeds |
+| `update_element` | Change content, position, or styles |
+| `delete_element` | Remove an element |
 
-### Intelligence & Collaboration
+### Intelligence
 
-| Tool | Description |
+| Tool | What it does |
 |------|-------------|
-| `get_clusters` | AI spatial analysis - detect moodboards, comparisons, sequences |
-| `get_collaboration_status` | Real-time info on online users, cursors, selections, locks |
-| `resolve_natural_ref` | Convert human-readable refs like "sticky-top-left-1" to UUIDs |
+| `get_clusters` | AI spatial analysis — detect moodboards, sequences, comparisons |
+| `get_collaboration_status` | Who's online, what's locked, cursor positions |
+| `resolve_natural_ref` | Convert `sticky-top-left-1` to a UUID |
+
+---
 
 ## Element Types
 
-### Editable Elements
+| Type | Format | Use for |
+|------|--------|---------|
+| `sticky` | Plain text | Quick notes, brainstorming |
+| `text-element` | Tiptap JSON | Formatted text, paragraphs |
+| `media` | URL | Images (.jpg, .png, .gif), videos (.mp4) |
+| `embed` | URL | YouTube, Instagram, TikTok, Twitter/X, LinkedIn, Facebook, Loom |
 
-| Type | Content Format | Best For |
-|------|----------------|----------|
-| `sticky` | Plain text | Quick notes, brainstorming, ideas |
-| `text-element` | Tiptap JSON | Formatted text, paragraphs, rich content |
-
-### Media Elements (via `create_media_element`)
-
-| Type | Supported Sources |
-|------|-------------------|
-| `media` | Direct image/video URLs (.jpg, .png, .gif, .mp4) |
-| `embed` | YouTube, Instagram, TikTok, Twitter/X, LinkedIn, Facebook, Loom |
+---
 
 ## Natural References
 
-Instead of UUIDs, you can reference elements using human-readable IDs:
+Reference elements by position instead of UUID:
 
 ```
-sticky-top-left-1      → First sticky in top-left quadrant
+sticky-top-left-1      → First sticky in the top-left area
 text-element-center-2  → Second text element in center
 media-bottom-right-1   → First media in bottom-right
 ```
 
-Use `resolve_natural_ref` to convert these to UUIDs when needed.
+Use `resolve_natural_ref` to get the UUID when you need it.
 
-## Smart Positioning
+---
 
-When creating or finding elements, use smart positioning:
+## Positioning
 
-| Option | Example | Description |
-|--------|---------|-------------|
-| `quadrant` | `"top-left"` | Position in canvas region |
-| `near_element` | `"sticky-top-left-1"` | Place 50px right of another element |
-| `x, y` | `{x: 100, y: 200}` | Exact coordinates |
+| Method | Example | Behavior |
+|--------|---------|----------|
+| Quadrant | `"top-left"` | Places in that canvas region |
+| Near element | `"sticky-top-left-1"` | 50px to the right of that element |
+| Exact | `{x: 100, y: 200}` | Pixel coordinates |
 
-## Real-Time Collaboration
+---
 
-All read tools support `collaboration_context` to see:
-- Who is online viewing the canvas
-- Which elements are locked for editing
+## Collaboration Safety
+
+Every read tool can include collaboration context:
+- Who's viewing the canvas
+- Which elements are locked (someone is editing)
 - Which elements are selected by others
-- Cursor positions of collaborators
 
-This prevents conflicts when AI and humans work together.
+This prevents your AI from overwriting someone's in-progress work.
 
-## Use Cases
+---
 
-### Content Generation
+## Examples
+
+**Add notes**:
 ```
-"Add a sticky note with 'Q1 Goals' in the top-left,
-then add three more stickies below it with our priorities"
+"Add a sticky with 'Q1 Goals' in the top-left, then three more below with our priorities"
 ```
 
-### Media Curation
+**Curate media**:
 ```
 "Add this YouTube video to the moodboard section"
-"Embed these Instagram posts near the inspiration cluster"
 ```
 
-### Canvas Analysis
+**Analyze a canvas**:
 ```
-"Analyze this canvas and tell me what themes you see"
-"What are the main clusters and how do they relate?"
+"What themes do you see on this canvas?"
 ```
 
-### Safe Collaboration
+**Safe editing**:
 ```
-"Show me which elements are available to edit right now"
 "Update the sticky that no one else is working on"
 ```
-
-## Getting Started
-
-1. [Setup Guide](/docs/mcp-tools/setup) - Connect to your AI assistant
-2. [Canvas MCP Reference](/docs/mcp-tools/canvas-mcp) - Complete API reference

@@ -1,64 +1,81 @@
 ---
 title: Authentication
-description: How to authenticate with the Growhouse API
+description: How to authenticate with Growhouse MCP
 ---
 
 # Authentication
 
-The Growhouse API uses API keys for authentication.
+Growhouse MCP supports two authentication methods:
 
-## Getting an API Key
+| Method | How it works |
+|--------|--------------|
+| **OAuth 2.1** | Browser-based sign-in. Used by Claude and other MCP clients automatically. |
+| **API Key** | Bearer token in the `Authorization` header. Create in Settings. |
 
-1. Log in to [app.growhouse.co](https://app.growhouse.co)
-2. Go to **Workspace Settings**
-3. Click **API Keys** in the sidebar
-4. Click **Create API Key**
-5. Give it a name and select permissions
-6. Copy the key immediately (it won't be shown again)
+---
 
-## Using Your API Key
+## API Keys
 
-Include your API key in the `Authorization` header:
+### Create a key
+
+1. Go to [app.growhouse.co](https://app.growhouse.co) > **Settings**
+2. **Account > MCP Keys** for user-scoped keys (access all your workspaces)
+3. **Workspace > MCP** for workspace-scoped keys (access one workspace)
+4. Click **Create Key**, copy it immediately
+
+### Use the key
+
+Include it as a Bearer token:
 
 ```bash
-curl -X GET "https://api.growhouse.co/v1/workspaces" \
-  -H "Authorization: Bearer YOUR_API_KEY"
+curl -X POST https://mcp.growhouse.co \
+  -H "Authorization: Bearer mcp_sk_your_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
-## Key Permissions
+All API keys start with `mcp_sk_`.
 
-When creating a key, you can scope its permissions:
+### Manage keys
 
-| Permission | Description |
-|------------|-------------|
-| `read:workspaces` | View workspace info |
-| `write:workspaces` | Create/update workspaces |
-| `read:canvases` | View canvases |
-| `write:canvases` | Create/update canvases |
-| `delete:canvases` | Delete canvases |
+- **Revoke**: Settings > find the key > delete
+- **Rotate**: Create a new key, update your client, delete the old one
+- **Last used**: Visible in Settings so you can find stale keys
 
-## Security Best Practices
+---
 
-### Do
+## OAuth 2.1
 
-- Store keys in environment variables
-- Use separate keys for different applications
-- Rotate keys periodically
-- Use minimum required permissions
+OAuth is handled automatically by MCP clients like Claude. You don't need to configure anything — just connect via `https://mcp.growhouse.co` and approve access in your browser.
 
-### Don't
+### How it works
 
-- Commit keys to version control
-- Share keys between team members
-- Use production keys in development
-- Expose keys in client-side code
+1. Your AI client redirects you to Growhouse to sign in
+2. You approve the requested permissions
+3. Growhouse issues a token pair (access + refresh)
+4. Tokens refresh automatically — no manual intervention
 
-## Revoking Keys
+### Scopes
 
-If a key is compromised:
+| Scope | Grants |
+|-------|--------|
+| `canvas:read` | View canvases and elements |
+| `canvas:write` | Create, update, and delete elements |
+| `workspace:read` | View workspace info |
 
-1. Go to **Workspace Settings** → **API Keys**
-2. Find the compromised key
-3. Click **Revoke**
-4. Create a new key
-5. Update your applications
+### Technical details
+
+- **PKCE**: Required (S256 only)
+- **Token lifetime**: ~1 hour, auto-refreshed
+- **Refresh tokens**: Single-use with rotation
+- **Server metadata**: `https://mcp.growhouse.co/.well-known/oauth-authorization-server`
+- **Dynamic client registration**: Supported (RFC 7591)
+
+---
+
+## Security
+
+- Keys are SHA-256 hashed at rest — Growhouse never stores raw keys
+- OAuth tokens are short-lived with automatic rotation
+- All connections require HTTPS
+- Rate limiting applies per workspace (100 requests/minute)

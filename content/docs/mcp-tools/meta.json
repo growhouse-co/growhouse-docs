@@ -1,4 +1,4 @@
 {
   "title": "MCP Tools",
-  "pages": ["index", "canvas-mcp", "setup"]
+  "pages": ["index", "setup", "canvas-mcp"]
 }
