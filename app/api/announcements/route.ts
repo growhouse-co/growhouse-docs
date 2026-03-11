@@ -24,7 +24,42 @@ interface Announcement {
 // When you deploy a major feature, add an announcement here
 // Add announcements here when shipping features.
 // Use /release skill in Claude Code to generate these automatically.
-const announcements: Announcement[] = [];
+const announcements: Announcement[] = [
+  {
+    id: '2026-03-11-threads-frames',
+    version: '1.0.0',
+    slides: [
+      {
+        id: 'slide-threads',
+        title: 'Threads & Comments',
+        description: 'Leave comments on your videos and images. Point to a specific second or region. @mention your team, or let AI agents comment through MCP.',
+        // media: { type: 'loom', url: '' },
+        cta: {
+          label: 'See what\'s new',
+          url: 'https://docs.growhouse.co/docs/releases',
+        },
+      },
+      {
+        id: 'slide-draw-text',
+        title: 'Draw-to-Create Text',
+        description: 'Click and drag to place a text box at the size you need. Text wraps inside it.',
+        cta: {
+          label: 'See what\'s new',
+          url: 'https://docs.growhouse.co/docs/releases',
+        },
+      },
+      {
+        id: 'slide-frames',
+        title: 'Frames',
+        description: 'Structure your canvas with colored frames. Group nodes together, nest for layers, and move everything as one.',
+        cta: {
+          label: 'See what\'s new',
+          url: 'https://docs.growhouse.co/docs/releases',
+        },
+      },
+    ],
+  },
+];
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
