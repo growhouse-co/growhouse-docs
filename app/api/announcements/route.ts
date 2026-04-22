@@ -17,6 +17,7 @@ interface AnnouncementSlide {
 interface Announcement {
   id: string;
   version: string;
+  publishedAt: string; // ISO 8601. Controls 7-day TTL in app.growhouse.co modal.
   slides: AnnouncementSlide[];
 }
 
@@ -28,6 +29,7 @@ const announcements: Announcement[] = [
   {
     id: '2026-03-11-threads-frames',
     version: '1.0.0',
+    publishedAt: '2026-03-11T00:00:00Z',
     slides: [
       {
         id: 'slide-threads',
