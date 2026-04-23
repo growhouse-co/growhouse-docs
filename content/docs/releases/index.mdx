@@ -9,6 +9,58 @@ Stay up to date with the latest Growhouse updates.
 
 ---
 
+## April 2026
+
+### April 23, 2026 — v1.1.0
+
+**Arrows that mean something**
+
+Draw an arrow between any two elements on the canvas. Anchor to a specific spot inside a node, not just its edge. When you rearrange things, the arrows follow. Flip direction to show cause, dependency, or a two-way link. Every arrow is also a fact about how your ideas connect. When Claude reads your canvas through MCP, it reads the relationships too, so your funnels, flows, and content journeys stay structured for both you and your agents.
+
+**Comment on a whole frame, not just one piece**
+
+Before, you could drop a thread on a node or a text element, but not on the frame that grouped them. Now frames carry comments too. Open a thread on your "Campaign Q2" frame or "Research Sources" frame to discuss the grouping itself, not the individual items inside it. Same threads, mentions, and MCP surface as node and text comments. Your team can now talk about sections, not just pieces.
+
+**Tidy any pile of files**
+
+Drop 20 videos at once, or select a scattered group that has been piling up on your canvas. Pick a layout (Row, Column, Grid) and a sort order (position, newest, name, or kind). Your asset review, content calendar, or research dump snaps into a readable shape. Works on three files, or three hundred.
+
+**Audio on the canvas**
+
+Drop an MP3 or WAV, get a waveform preview, trim without leaving the canvas. Carousel for multiple clips. Comment on a specific second so your team can review a podcast or ad spot the same way you review a video. MCP tools let Claude create and update audio nodes directly.
+
+**Stickies and text are the same thing now**
+
+Plain text is plain text, clean and legible. Sticky is text with a background color preset, nothing more. Pick a background from the toolbar to turn any text into a sticky. Clear it to turn it back. Your existing stickies migrated automatically, headlines intact.
+
+**Heavy files don't kill the canvas**
+
+Upload a 200MB raw camera JPG. The canvas stays smooth. Three auto-generated thumbnail sizes, so the canvas always picks the right one. Blur previews show up instantly while the full image loads in the background.
+
+**Improvements**
+- Frames auto-contain whatever you draw around them
+- Frame labels stay readable at every zoom level
+- Video loop and trim buttons moved to the top-left for a cleaner video node
+- Split text and sticky tools in the bottom toolbar with their own keyboard shortcuts
+- Multi-select drag uses the selection's bounding box for alignment guides, not just the element you grabbed
+- Public canvas view pans and zooms without flicker
+- MCP tools for arrows let Claude create, update, and delete them directly
+
+**Performance & Stability**
+- Canvas no longer freezes for a second on your first pan
+- "Failed to fetch dynamically imported module" errors after a deploy auto-recover
+- Silent save failures now surface in Sentry instead of pretending everything saved
+- Per-user undo works correctly with multiple users on the same canvas
+- Cursor, selection, and presence indicators reliably appear for all collaborators
+- Frames keep their children after reload and drag them together correctly
+- Comment avatars follow frames live during drag
+- Multi-drag after a layout action no longer snaps back to pre-layout positions
+- Redo restores dragged element positions
+- MCP handshake fixed for newer Claude Code clients
+- 40+ bug fixes across canvas, undo/redo, collaboration, and save pipeline
+
+---
+
 ## March 2026
 
 ### March 11, 2026 — v1.0.0
